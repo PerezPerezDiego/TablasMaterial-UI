@@ -1,13 +1,105 @@
-import './App.css'
-import TablaProductos from './Componentes/TablaProductos'
+import React, { useState } from 'react';
 
-function App() {
-  
+import {
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  UploadOutlined,
+  UserOutlined,
+  VideoCameraOutlined,
+} from '@ant-design/icons';
+
+import { Button, Layout, Menu, theme, } from 'antd';
+import TablaProductos from './Componentes/TablaProductos';
+
+const { Header, Sider, Content } = Layout;
+
+const App: React.FC = () => {
+  const [collapsed, setCollapsed] = useState(false);
+  const {
+    token: { colorBgContainer, borderRadiusLG },
+  } = theme.useToken();
+
   return (
-    <>
-      <TablaProductos/>
-    </>
-  )
-}
+    <Layout>
+      <Sider trigger={null} collapsible collapsed={collapsed}>
+        <div className="demo-logo-vertical" />
+        <Menu
+          theme="dark"
+          mode="inline"
+          defaultSelectedKeys={['1']}
+          items={[
+            {
+              key: '1',
+              //icon: <UserOutlined />,
+              label: 'Categorias',
+            },
+            {
+              key: '2',
+              //icon: <VideoCameraOutlined />,
+              label: 'Clientes',
+            },
+            {
+              key: '3',
+              //icon: <UploadOutlined />,
+              label: 'Dirección',
+            },
+            {
+              key: '4',
+              //icon: <UserOutlined />,
+              label: 'Genero',
+            },
+            {
+              key: '5',
+              //icon: <UserOutlined />,
+              label: 'Productos',
+            },
+            {
+              key: '6',
+              //icon: <UserOutlined />,
+              label: 'Sesiones',
+            },
+            {
+              key: '7',
+              //icon: <UserOutlined />,
+              label: 'SesionesProductos',
+            },
+            {
+              key: '8',
+              //icon: <UserOutlined />,
+              label: 'Usuarios',
+            },
 
-export default App
+
+          ]}
+        />
+      </Sider>
+      <Layout>
+        <Header style={{ padding: 0, background: colorBgContainer }}>
+          <Button
+            type="text"
+            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            onClick={() => setCollapsed(!collapsed)}
+            style={{
+              fontSize: '16px',
+              width: 64,
+              height: 64,
+            }}
+          />
+        </Header>
+        <Content
+          style={{
+            margin: '24px 16px',
+            padding: 24,
+            minHeight: 280,
+            background: colorBgContainer,
+            borderRadius: borderRadiusLG,
+          }}
+        >
+          <TablaProductos/>
+        </Content>
+      </Layout>
+    </Layout>
+  );
+};
+
+export default App;

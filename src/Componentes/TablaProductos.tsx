@@ -1,15 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import {getProducts}from '../services/products'
 import { Product } from '../models/products';
+import { Table } from "antd";
 
 const TablaProductos: React.FC =() => {
-  const [products, setProductos] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+
+  const columns = [
+    {
+      title: 'Descripcion',
+      dataIndex: 'descripcion',
+      key: 'descripcion',
+    },
+    {
+      title: 'Precio',
+      dataIndex: 'precio',
+      key: 'precio',
+    }
+  ];
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const products = await getProducts();
-        setProductos(products);
+        setProducts(products);
       } catch (error) {
         console.error("Error fetching products:", error);
       }
@@ -19,9 +33,10 @@ const TablaProductos: React.FC =() => {
   }, []);
 
   
-    return (
-    <>{products.forEach((product)=>{<h2>{product.descripcion}</h2>})}</>
-    );
+  return (
+  <Table dataSource={products} columns={columns} />
+  );
+  
 }
 
 export default TablaProductos;
