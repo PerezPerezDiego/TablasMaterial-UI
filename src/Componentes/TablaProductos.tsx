@@ -16,7 +16,33 @@ const TablaProductos: React.FC =() => {
       title: 'Precio',
       dataIndex: 'precio',
       key: 'precio',
-    }
+    },
+    {
+      title: 'fk_categoria',
+      dataIndex: 'fk_categoria',
+      key: 'fk_categoria',
+    },
+    {
+      title: 'fecha_creacion',
+      dataIndex: 'fecha_creacion',
+      key: 'fecha_creacion',
+    },
+
+    {
+      title: 'fecha_creacion',
+      dataIndex: 'fecha_creacion',
+      key: 'fecha_creacion',
+    },
+
+    {
+      title: 'fecha_actualizacion',
+      dataIndex: 'fecha_actualizacion',
+      key: 'fecha_actualizacion',
+    },
+
+
+
+
   ];
 
   useEffect(() => {

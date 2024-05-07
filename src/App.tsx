@@ -10,68 +10,73 @@ import {
 
 import { Button, Layout, Menu, theme, } from 'antd';
 import TablaProductos from './Componentes/TablaProductos';
+import TablaCategorias from './Componentes/TablaCategorias';
+import TablaClientes from './Componentes/TablaClientes';
+import TablaDireccion  from './Componentes/TablaDireccion';
+import TablaGenero from './Componentes/TablaGenero';
+import TablaSesiones from './Componentes/TablaSesiones';
+import TablaSesionesProductos from './Componentes/TablaSesionesProductos';
+import TablaUsuarios from './Componentes/TablaUsuarios';
 
 const { Header, Sider, Content } = Layout;
 
 const App: React.FC = () => {
+  const [selectedKey, setSelectedKey] = useState('1');
   const [collapsed, setCollapsed] = useState(false);
+
+  const handleMenuClick = (item: any) => {
+    setSelectedKey(item.key);
+  };
+
+  const renderContent = () => {
+        switch (selectedKey) {
+      case '1':
+        return <TablaCategorias />;
+        break;
+      case '2':
+        return <TablaClientes />;
+        break;
+      case '3':
+        return <TablaDireccion />;
+        break;
+      case '4':
+        return <TablaGenero />; break;
+      case '5':
+        return <TablaProductos />; break;
+      case '6':
+        return <TablaSesiones />; break;
+      case '7':
+        return <TablaSesionesProductos />; break;
+      case '8':
+        return <TablaUsuarios />; break;
+      default:
+        return null;
+    }
+  };
+ 
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
   return (
-    <Layout>
+    <Layout style={{ minHeight: '100vh' }}>
       <Sider trigger={null} collapsible collapsed={collapsed}>
         <div className="demo-logo-vertical" />
         <Menu
           theme="dark"
           mode="inline"
           defaultSelectedKeys={['1']}
-          items={[
-            {
-              key: '1',
-              //icon: <UserOutlined />,
-              label: 'Categorias',
-            },
-            {
-              key: '2',
-              //icon: <VideoCameraOutlined />,
-              label: 'Clientes',
-            },
-            {
-              key: '3',
-              //icon: <UploadOutlined />,
-              label: 'Dirección',
-            },
-            {
-              key: '4',
-              //icon: <UserOutlined />,
-              label: 'Genero',
-            },
-            {
-              key: '5',
-              //icon: <UserOutlined />,
-              label: 'Productos',
-            },
-            {
-              key: '6',
-              //icon: <UserOutlined />,
-              label: 'Sesiones',
-            },
-            {
-              key: '7',
-              //icon: <UserOutlined />,
-              label: 'SesionesProductos',
-            },
-            {
-              key: '8',
-              //icon: <UserOutlined />,
-              label: 'Usuarios',
-            },
-
-
-          ]}
-        />
+          onClick={handleMenuClick}
+        >
+          <Menu.Item key="1" icon={<UserOutlined />}>Categorías</Menu.Item>
+          <Menu.Item key="2" icon={<UserOutlined />}>Clientes</Menu.Item>
+          <Menu.Item key="3" icon={<UserOutlined />}>Dirección</Menu.Item>
+          <Menu.Item key="4" icon={<UserOutlined />}>Género</Menu.Item>
+          <Menu.Item key="5" icon={<UserOutlined />}>Productos</Menu.Item>
+          <Menu.Item key="6" icon={<UserOutlined />}>Sesiones</Menu.Item>
+          <Menu.Item key="7" icon={<UserOutlined />}>SesionesProductos</Menu.Item>
+          <Menu.Item key="8" icon={<UserOutlined />}>Usuarios</Menu.Item>
+        </Menu>
       </Sider>
       <Layout>
         <Header style={{ padding: 0, background: colorBgContainer }}>
@@ -95,7 +100,7 @@ const App: React.FC = () => {
             borderRadius: borderRadiusLG,
           }}
         >
-          <TablaProductos/>
+          {renderContent()}
         </Content>
       </Layout>
     </Layout>
