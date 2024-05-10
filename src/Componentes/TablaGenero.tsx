@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { getGenero } from '../services/genero';
 import { Genero } from '../models/genero';
-import { Table } from "antd";
+import { Button, Drawer, Form, Input, Table } from "antd";
+import DrawerFooter from './DrawerFooter';
 
 const TablaGenero: React.FC = () => {
   const [genero, setGenero] = useState<Genero[]>([]);
+  const [open, setOpen] = useState(false);
 
   const columns = [
     {
@@ -45,8 +47,8 @@ const TablaGenero: React.FC = () => {
   useEffect(() => {
     const fetchGenero = async () => {
       try {
-        const genero = await getGenero();
-        setGenero(genero);
+        const fetchedGenero = await getGenero();
+        setGenero(fetchedGenero);
       } catch (error) {
         console.error("Error fetching genero:", error);
       }
@@ -55,8 +57,28 @@ const TablaGenero: React.FC = () => {
     fetchGenero();
   }, []);
 
+  const showDrawer = () => {
+    setOpen(true);
+  };
+
+  const onClose = () => {
+    setOpen(false);
+  };
+
   return (
-    <Table dataSource={genero} columns={columns} />
+    <>
+      <Button type="primary" onClick={showDrawer}>
+        Open
+      </Button>
+      <Table dataSource={genero} columns={columns} />
+      <Drawer title="Agregar " onClose={onClose} visible={open} footer={<DrawerFooter />}>
+        <Form>
+          <Form.Item label="Genero" name="genero"> 
+            <Input />
+          </Form.Item>
+        </Form>
+      </Drawer>
+    </>
   );
 }
 

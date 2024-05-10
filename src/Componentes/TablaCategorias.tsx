@@ -1,58 +1,46 @@
 import React, { useEffect, useState } from 'react';
-import {getCategoria}from '../services/categorias'
+import { getCategoria } from '../services/categorias';
 import { Categoria } from '../models/categorias';
-import { Table } from "antd";
+import { Button, Drawer, Form, Input, Table } from "antd";
+import DrawerFooter from './DrawerFooter';
 
-const TablaCategorias: React.FC =() => {
+const TablaCategorias: React.FC = () => {
   const [categorias, setCategoria] = useState<Categoria[]>([]);
+  const [open, setOpen] = useState(false);
 
   const columns = [
     {
-      title: 'id_categoria',
+      title: 'ID Categoría',
       dataIndex: 'id_categoria',
       key: 'id_categoria',
     },
-
     {
-        title: 'nombre',
-        dataIndex: 'nombre',
-        key: 'nombre',
+      title: 'Nombre',
+      dataIndex: 'nombre',
+      key: 'nombre',
     },
-
     {
-        title: 'fecha_creacion',
-        dataIndex: 'fecha_creacion',
-        key: 'fecha_creacion',
+      title: 'Fecha Creación',
+      dataIndex: 'fecha_creacion',
+      key: 'fecha_creacion',
     },
-
     {
-        title: 'fecha_actualizado',
-        dataIndex: 'fecha_actualizado',
-        key: 'fecha_actualizado',
+      title: 'Fecha Actualización',
+      dataIndex: 'fecha_actualizado',
+      key: 'fecha_actualizado',
     },
-
     {
-        title: 'fk_creado_por',
-        dataIndex: 'fk_creado_por',
-        key: 'fk_creado_por',
+      title: 'FK Creado Por',
+      dataIndex: 'fk_creado_por',
+      key: 'fk_creado_por',
     },
-
-    {
-        title: 'fk_creado_por',
-        dataIndex: 'fk_creado_por',
-        key: 'fk_creado_por',
-    },
-
-
-
-
   ];
 
   useEffect(() => {
     const fetchCategoria = async () => {
       try {
-        const categorias = await getCategoria();
-        setCategoria(categorias);
+        const fetchedCategorias = await getCategoria();
+        setCategoria(fetchedCategorias);
       } catch (error) {
         console.error("Error fetching categorias:", error);
       }
@@ -61,11 +49,29 @@ const TablaCategorias: React.FC =() => {
     fetchCategoria();
   }, []);
 
-  
+  const showDrawer = () => {
+    setOpen(true);
+  };
+
+  const onClose = () => {
+    setOpen(false);
+  };
+
   return (
-  <Table dataSource={categorias} columns={columns} />
+    <>
+      <Button type="primary" onClick={showDrawer}>
+        Open
+      </Button>
+      <Table dataSource={categorias} columns={columns} />
+      <Drawer title="Agregar Categoría" onClose={onClose} visible={open} footer={<DrawerFooter />}>
+        <Form>
+          <Form.Item label="Nombre" name="nombre"> 
+            <Input />
+          </Form.Item>
+        </Form>
+      </Drawer>
+    </>
   );
-  
 }
 
 export default TablaCategorias;

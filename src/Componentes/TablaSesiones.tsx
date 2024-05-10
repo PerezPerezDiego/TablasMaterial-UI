@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { getSesion } from '../services/sesiones';
 import { Sesion } from '../models/sesiones';
-import { Table } from "antd";
+import { Button, Drawer, Form, Input, Table } from "antd";
+import DrawerFooter from './DrawerFooter';
 
 const TablaSesiones: React.FC = () => {
   const [sesion, setSesion] = useState<Sesion[]>([]);
+  const [open, setOpen] = useState(false);
 
   const columns = [
     {
@@ -52,15 +54,14 @@ const TablaSesiones: React.FC = () => {
         dataIndex: 'fk_actualizado_por',
         key: 'fk_actualizado_por',
     },
-    
-    
   ];
+
 
   useEffect(() => {
     const fetchSesion = async () => {
       try {
-        const sesion = await getSesion();
-        setSesion(sesion);
+        const data = await getSesion();
+        setSesion(data);
       } catch (error) {
         console.error("Error fetching sesion:", error);
       }
@@ -69,8 +70,28 @@ const TablaSesiones: React.FC = () => {
     fetchSesion();
   }, []);
 
+  const showDrawer = () => {
+    setOpen(true);
+  };
+
+  const onClose = () => {
+    setOpen(false);
+  };
+
   return (
-    <Table dataSource={sesion} columns={columns} />
+    <>
+      <Button type="primary" onClick={showDrawer}>
+        Open
+      </Button>
+      <Table dataSource={sesion} columns={columns} />
+      <Drawer title="Agregar hora_sesion " onClose={onClose} visible={open} footer={<DrawerFooter/>}>
+        <Form>
+          <Form.Item label="Hora" name="hora_sesion"> 
+            <Input />
+          </Form.Item>
+        </Form>
+      </Drawer>
+    </>
   );
 }
 

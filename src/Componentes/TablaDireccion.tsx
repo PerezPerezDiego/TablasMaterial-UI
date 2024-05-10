@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { getDireccion } from '../services/direccion';
 import { Direccion } from '../models/direccion';
-import { Table } from "antd";
+import { Button, Drawer, Form, Input, Table } from "antd";
+import DrawerFooter from './DrawerFooter';
 
 const TablaDireccion: React.FC = () => {
   const [direccion, setDireccion] = useState<Direccion[]>([]);
+  const [open, setOpen] = useState(false);
 
   const columns = [
     {
@@ -42,19 +44,13 @@ const TablaDireccion: React.FC = () => {
         dataIndex: 'ciudad',
         key: 'ciudad',
     },
-
-
-
-
-    
-
   ];
 
   useEffect(() => {
     const fetchDireccion = async () => {
       try {
-        const direccion = await getDireccion();
-        setDireccion(direccion);
+        const fetchedDireccion = await getDireccion();
+        setDireccion(fetchedDireccion);
       } catch (error) {
         console.error("Error fetching direccion:", error);
       }
@@ -63,8 +59,34 @@ const TablaDireccion: React.FC = () => {
     fetchDireccion();
   }, []);
 
+  const showDrawer = () => {
+    setOpen(true);
+  };
+
+  const onClose = () => {
+    setOpen(false);
+  };
+
   return (
-    <Table dataSource={direccion} columns={columns} />
+    <>
+      <Button type="primary" onClick={showDrawer}>
+        Open
+      </Button>
+      <Table dataSource={direccion} columns={columns} />
+      <Drawer title="Agregar " onClose={onClose} visible={open} footer={<DrawerFooter />}>
+        <Form>
+          <Form.Item label="Codigo Postal" name="codigo_postal"> 
+            <Input />
+          </Form.Item>
+          <Form.Item label="Calle" name="calle"> 
+            <Input />
+          </Form.Item>
+          <Form.Item label="Colonia" name="colonia"> 
+            <Input />
+          </Form.Item>
+        </Form>
+      </Drawer>
+    </>
   );
 }
 

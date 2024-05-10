@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { getCliente } from '../services/clientes';
 import { Cliente } from '../models/clientes';
-import { Table } from "antd";
+import { Button, Drawer, Form, Input, Table } from "antd";
+import DrawerFooter from './DrawerFooter';
 
 const TablaClientes: React.FC = () => {
   const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [open, setOpen] = useState(false);
 
   const columns = [
     {
@@ -18,33 +20,32 @@ const TablaClientes: React.FC = () => {
       key: 'nombre',
     },
     {
-      title: 'apellido',
+      title: 'Apellido',
       dataIndex: 'apellido',
       key: 'apellido',
     },
     {
-        title: 'fecha_nacimiento',
-        dataIndex: 'fecha_nacimiento',
-        key: 'fecha_nacimiento',
+      title: 'Fecha Nacimiento',
+      dataIndex: 'fecha_nacimiento',
+      key: 'fecha_nacimiento',
     },
     {
-        title: 'fecha_creacion',
-        dataIndex: 'fecha_creacion',
-        key: 'fecha_creacion',
+      title: 'Fecha Creación',
+      dataIndex: 'fecha_creacion',
+      key: 'fecha_creacion',
     },
     {
-        title: 'fecha_actualizacion',
-        dataIndex: 'fecha_actualizacion',
-        key: 'fecha_actualizacion',
+      title: 'Fecha Actualización',
+      dataIndex: 'fecha_actualizacion',
+      key: 'fecha_actualizacion',
     },
-
   ];
 
   useEffect(() => {
     const fetchClientes = async () => {
       try {
-        const clientes = await getCliente();
-        setClientes(clientes);
+        const fetchedClientes = await getCliente();
+        setClientes(fetchedClientes);
       } catch (error) {
         console.error("Error fetching clientes:", error);
       }
@@ -53,8 +54,34 @@ const TablaClientes: React.FC = () => {
     fetchClientes();
   }, []);
 
+  const showDrawer = () => {
+    setOpen(true);
+  };
+
+  const onClose = () => {
+    setOpen(false);
+  };
+
   return (
-    <Table dataSource={clientes} columns={columns} />
+    <>
+      <Button type="primary" onClick={showDrawer}>
+        Open
+      </Button>
+      <Table dataSource={clientes} columns={columns} />
+      <Drawer title="Agregar " onClose={onClose} visible={open} footer={<DrawerFooter />}>
+        <Form>
+          <Form.Item label="Nombre" name="nombre"> 
+            <Input />
+          </Form.Item>
+          <Form.Item label="Apellido" name="apellido"> 
+            <Input />
+          </Form.Item>
+          <Form.Item label="Fecha Nacimiento" name="fecha_nacimiento"> 
+            <Input />
+          </Form.Item>
+        </Form>
+      </Drawer>
+    </>
   );
 }
 
