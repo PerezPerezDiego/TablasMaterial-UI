@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { getCliente } from '../services/clientes';
+import { createCliente, getCliente } from '../services/clientes';
 import { Cliente } from '../models/clientes';
-import { Button, Drawer, Form, Input, Table } from "antd";
+import { Button, Drawer, Form, Input, Table, DatePicker } from "antd";
+import type { DatePickerProps } from 'antd';
 import DrawerFooter from './DrawerFooter';
 
 const TablaClientes: React.FC = () => {
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [open, setOpen] = useState(false);
+  const [nombre, setNombre] = useState<string>('');
+  const [apellido, setApellido] = useState<string>('');
+  const [fechaNacimiento, setfechaNacimiento] = useState<Date>(new Date());
+  
 
   const columns = [
     {
@@ -28,16 +33,6 @@ const TablaClientes: React.FC = () => {
       title: 'Fecha Nacimiento',
       dataIndex: 'fecha_nacimiento',
       key: 'fecha_nacimiento',
-    },
-    {
-      title: 'Fecha Creación',
-      dataIndex: 'fecha_creacion',
-      key: 'fecha_creacion',
-    },
-    {
-      title: 'Fecha Actualización',
-      dataIndex: 'fecha_actualizacion',
-      key: 'fecha_actualizacion',
     },
   ];
 
@@ -62,22 +57,44 @@ const TablaClientes: React.FC = () => {
     setOpen(false);
   };
 
+  const onChange: DatePickerProps['onChange'] = (date) => {
+    const selectedDate = new Date(date.year(), date.month() + 1, date.date());
+    const randomID =  Math.floor(Math.random() * (5 - 1 + 1)) + 1;
+    setfechaNacimiento(selectedDate);
+  };
+
+  const handleSubmit = async () => {
+    try {
+      await createCliente({
+         nombre,
+         apellido,
+         fecha_nacimiento: fechaNacimiento,     
+        }); // Llama a createUsuario con los datos del formulario
+      // Luego puedes volver a cargar la lista de usuarios para actualizar la tabla
+      const updatedClientes = await getCliente();
+      setClientes(updatedClientes);
+      onClose(); // Cierra el Drawer después de crear el usuario
+    } catch (error) {
+      console.error("Error creando cliente:", error);
+    }
+  };
+
   return (
     <>
       <Button type="primary" onClick={showDrawer}>
         Open
       </Button>
       <Table dataSource={clientes} columns={columns} />
-      <Drawer title="Agregar " onClose={onClose} visible={open} footer={<DrawerFooter />}>
+      <Drawer title="Agregar " onClose={onClose} visible={open} footer={<DrawerFooter createRecord={handleSubmit}/>}>
         <Form>
           <Form.Item label="Nombre" name="nombre"> 
-            <Input />
+          <Input value={nombre} onChange={(e) => setNombre(e.target.value)} />
           </Form.Item>
           <Form.Item label="Apellido" name="apellido"> 
-            <Input />
+          <Input value={apellido} onChange={(e) => setApellido(e.target.value)} />
           </Form.Item>
           <Form.Item label="Fecha Nacimiento" name="fecha_nacimiento"> 
-            <Input />
+          <DatePicker onChange={onChange} />
           </Form.Item>
         </Form>
       </Drawer>

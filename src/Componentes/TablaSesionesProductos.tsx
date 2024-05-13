@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { getSesionProducto } from '../services/sesionesProductos';
+import { getSesionProducto, createSesionProducto } from '../services/sesionesProductos';
 import { SesionProducto } from '../models/sesionesProductos';
-import { Button, Drawer, Form, Input, Table } from "antd";
+import { Button, Drawer, Form, Table, InputNumber } from "antd";
+import type { InputNumberProps } from 'antd';
 import DrawerFooter from './DrawerFooter';
 
 const TablaSesionesProductos: React.FC = () => {
   const [sesionesproductos, setSesionesProductos] = useState<SesionProducto[]>([]);
   const [open, setOpen] = useState(false);
+  const [cantidad, setCantidad] = useState<number>(0);
   
   const columns = [
     {
@@ -25,6 +27,33 @@ const TablaSesionesProductos: React.FC = () => {
         key: 'cantidad',
     },
   ];
+
+
+  
+  const onChange: InputNumberProps['onChange'] = (value) => {
+    if (value !== null && typeof value === 'number') {
+      setCantidad(value);
+    } else {
+      setCantidad(0);
+    }
+  };
+  
+  const handleSubmit = async () => {
+    const randomID =  Math.floor(Math.random() * (5 - 1 + 1)) + 1;
+    try {
+      await createSesionProducto({
+        fk_sesion: randomID,
+        fk_producto: randomID,
+        cantidad  }); // Llama a createUsuario con los datos del formulario
+      // Luego puedes volver a cargar la lista de usuarios para actualizar la tabla
+      const updateSesionesProductos = await getSesionProducto();
+      setSesionesProductos(updateSesionesProductos);
+      onClose(); // Cierra el Drawer después de crear el usuario
+    } catch (error) {
+      console.error("Error creating usuario:", error);
+    }
+  };
+  
 
   useEffect(() => {
     const fetchSesionProducto = async () => {
@@ -55,10 +84,10 @@ const TablaSesionesProductos: React.FC = () => {
         Open
       </Button>
       <Table dataSource={sesionesproductos} columns={columns} />
-      <Drawer title="Agregar usuario" onClose={onClose} visible={open} footer={<DrawerFooter/>}>
+      <Drawer title="Agregar " onClose={onClose} visible={open} footer={<DrawerFooter createRecord={handleSubmit}/>}>
         <Form>
           <Form.Item label="cantidad" name="cantidad"> 
-            <Input />
+          <InputNumber defaultValue={cantidad} onChange={onChange} />
           </Form.Item>
         </Form>
       </Drawer>

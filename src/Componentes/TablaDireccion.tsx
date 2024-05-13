@@ -1,12 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { getDireccion } from '../services/direccion';
+import { createDireccion, getDireccion } from '../services/direccion';
 import { Direccion } from '../models/direccion';
-import { Button, Drawer, Form, Input, Table } from "antd";
+import { Button, Drawer, Form, Table, InputNumber, Input } from "antd";
 import DrawerFooter from './DrawerFooter';
 
 const TablaDireccion: React.FC = () => {
   const [direccion, setDireccion] = useState<Direccion[]>([]);
   const [open, setOpen] = useState(false);
+  const [codigoPostal, setCodigoPostal] = useState<number>(0);
+  const [calle, setCalle] = useState<string>('');
+  const [colonia, setColonia] = useState<string>('');
+  const [ciudad, setCiudad] = useState<string>('');
+  const [numInt, setNumInt] = useState<string>('');
+  const [numExt, setNumExt] = useState<string>('');
+
 
   const columns = [
     {
@@ -28,16 +35,6 @@ const TablaDireccion: React.FC = () => {
         title: 'colonia',
         dataIndex: 'colonia',
         key: 'colonia',
-    },
-    {
-        title: 'num_ext',
-        dataIndex: 'num_ext',
-        key: 'num_ext',
-    },
-    {
-        title: 'num_int',
-        dataIndex: 'num_int',
-        key: 'num_int',
     },
     {
         title: 'ciudad',
@@ -67,22 +64,50 @@ const TablaDireccion: React.FC = () => {
     setOpen(false);
   };
 
+  const onChangeCodigoPostal = (value: number | null | undefined) => {
+    if (value !== null && value !== undefined) {
+      setCodigoPostal(value);
+    } else {
+      setCodigoPostal(0);
+    }
+  };
+  
+
+  const handleSubmit = async () => {
+    try {
+      await createDireccion({
+        codigo_postal: codigoPostal,
+        calle,
+        colonia,
+        ciudad,
+      });
+      const updatedDireccion = await getDireccion();
+      setDireccion(updatedDireccion);
+      onClose();
+    } catch (error) {
+      console.error("Error creating direccion:", error);
+    }
+  };
+
   return (
     <>
       <Button type="primary" onClick={showDrawer}>
         Open
       </Button>
       <Table dataSource={direccion} columns={columns} />
-      <Drawer title="Agregar " onClose={onClose} visible={open} footer={<DrawerFooter />}>
-        <Form>
-          <Form.Item label="Codigo Postal" name="codigo_postal"> 
-            <Input />
+      <Drawer title="Agregar " onClose={onClose} visible={open} footer={<DrawerFooter createRecord={handleSubmit}/>}>
+        <Form onFinish={handleSubmit}>
+          <Form.Item label="Codigo Postal" name="codigo_postal">
+            <InputNumber defaultValue={codigoPostal} onChange={onChangeCodigoPostal} />
           </Form.Item>
-          <Form.Item label="Calle" name="calle"> 
-            <Input />
+          <Form.Item label="Calle" name="calle">
+            <Input value={calle} onChange={(e) => setCalle(e.target.value)} />
           </Form.Item>
-          <Form.Item label="Colonia" name="colonia"> 
-            <Input />
+          <Form.Item label="Colonia" name="colonia">
+            <Input value={colonia} onChange={(e) => setColonia(e.target.value)} />
+          </Form.Item>
+          <Form.Item label="Ciudad" name="ciudad">
+            <Input value={ciudad} onChange={(e) => setCiudad(e.target.value)} />
           </Form.Item>
         </Form>
       </Drawer>
